@@ -13,6 +13,7 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -139,7 +140,7 @@ public class StatesAndCapitals
 
         testResults.put("I5", StatesAndCapitalsCheck.int5(doNoStatesHaveAOneWordMotto));
 
-        // ***** Advanced 1 (aggregation) *****
+//         ***** Advanced 1 (aggregation) *****
 
         // A11. Submit the average yearly precipitation across all state capitals
         // Use collect(averagingDouble())
@@ -158,13 +159,15 @@ public class StatesAndCapitals
         // A13. Submit how many states are in each time zone (or group of time zones)
         // Use collect(groupingBy()) and counting()
 
-        Map<String, Long> numberOfStatesByTimeZone = null;
+        Map<String, Long> numberOfStatesByTimeZone =states.stream().collect(Collectors.groupingBy(state -> state.getTimeZones().toString(), Collectors.counting()));
         testResults.put("A13", StatesAndCapitalsCheck.adv13(numberOfStatesByTimeZone));
 
         // A14. Submit how many state capitals are in each time zone
         // Use collect(groupingBy()) and counting()
 
         Map<String, Long> numberOfStateCapitalsByTimeZone = null;
+//                states.stream().collect(Collectors.groupingBy(state -> state.getTimeZones().toString(), Collectors.counting()));
+
 
         testResults.put("A14", StatesAndCapitalsCheck.adv14(numberOfStateCapitalsByTimeZone));
 
@@ -173,28 +176,31 @@ public class StatesAndCapitals
         // A21. Submit all state trees, sorted alphabetically (ascending)
         // Use sorted() and map()
 
-        List<String> stateTreesSortedAscending = null;
-
+        List<String> stateTreesSortedAscending = states.stream().map(state -> state.getStateTree()).sorted().collect(toList());
+//
         testResults.put("A21", StatesAndCapitalsCheck.adv21(stateTreesSortedAscending));
 
         // A22. Submit all state names, separated by "; "
         // Use collect(joining()) and map()
 
-        String allStateNamesSemicolonDelimited = null;
+        String allStateNamesSemicolonDelimited = states.stream().map(StateInfo::getStateName).collect(joining("; "));
 
         testResults.put("A22", StatesAndCapitalsCheck.adv22(allStateNamesSemicolonDelimited));
 
         // A23. Submit all distinct state birds
         // Use distinct() and map()
 
-        List<String> allDistinctStateBirds = null;
+        List<String> allDistinctStateBirds =
+                states.stream().map(StateInfo::getStateBird).distinct().collect(toList());
 
         testResults.put("A23", StatesAndCapitalsCheck.adv23(allDistinctStateBirds));
 
         // A24. Submit all distinct state birds, but with any kind of mockingbird removed
         // Use distinct(), map(), and filter()
 
-        List<String> allDistinctStateBirdsMinusMockingbirds = null;
+        List<String> allDistinctStateBirdsMinusMockingbirds =
+                states.stream().map(state -> state.getStateBird()).distinct().filter(bird -> !(bird.endsWith("mockingbird"))).collect(toList());
+//        System.out.println(allDistinctStateBirdsMinusMockingbirds);
 
         testResults.put("A24", StatesAndCapitalsCheck.adv24(allDistinctStateBirdsMinusMockingbirds));
 
@@ -202,7 +208,7 @@ public class StatesAndCapitals
         // Use collect(counting()), map(), and distinct()
         // PS: Don't use count(). IntelliJ will warn you but I want you to see how counting() works.
 
-        Long numberOfDistinctStateBirds = null;
+        Long numberOfDistinctStateBirds = states.stream().map(state -> state.getStateBird()).distinct().collect( Collectors.counting());
 
         testResults.put("A25", StatesAndCapitalsCheck.adv25(numberOfDistinctStateBirds));
 
@@ -227,8 +233,7 @@ public class StatesAndCapitals
         // A33. Submit the state with the least distance between its highest and lowest points
         // Use min(), comparing(), and orElse()
 
-        StateInfo stateWithLeastDistanceBetweenHighAndLowPoints = null;
-//        states.stream().min(Comparator.comparing(StateInfo::getHighestElevationInFeet - StateInfo::getLowestElevationInFeet)).get();
+        StateInfo stateWithLeastDistanceBetweenHighAndLowPoints = states.stream().min(Comparator.comparing(state -> state.getHighestElevationInFeet() - state.getLowestElevationInFeet())).get();
 
         testResults.put("A33", StatesAndCapitalsCheck.adv33(stateWithLeastDistanceBetweenHighAndLowPoints));
 
@@ -299,7 +304,7 @@ public class StatesAndCapitals
 
         testResults.put("E5", StatesAndCapitalsCheck.expert5(closestStateCapitals));
 
-        // ***** End Tests *****
+//         ***** End Tests *****
 
         System.out.println(testResults);
 
